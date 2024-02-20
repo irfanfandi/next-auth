@@ -25,6 +25,7 @@ declare module "next-auth" {
     _history: string;
   }
 }
+let userDataGoogle: any;
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -91,6 +92,35 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
+    async signIn({ account, profile }: any) {
+      if (account.provider === "google") {
+        const user = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_API_URL}/login-api/get-logged-in-google`,
+          {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify({
+              email: profile.email,
+            }),
+            cache: "no-cache",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const ress = await user.json();
+        if (!ress?.success) {
+          return false;
+        }
+        userDataGoogle = {
+          ...ress.user,
+          randomKey: "Random",
+        };
+        return {
+          ...ress.user,
+          randomKey: "Random",
+        };
+      }
+      return true;
+    },
     session: ({ session, token }: any) => {
       return {
         ...session,
@@ -108,6 +138,7 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           ...u,
+          ...userDataGoogle,
           id: u.id,
           randomKey: u.randomKey,
         };
