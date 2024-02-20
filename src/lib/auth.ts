@@ -4,7 +4,25 @@ import GoogleProvider from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface User {
-    id: number; // <- here it is
+    guid: string;
+    id: any;
+    user_name: string;
+    passwd: string;
+    email: string;
+    full_name: string;
+    user_status: number;
+    phone_id: string;
+    register_date: string;
+    branch_id: string;
+    is_new_task: number;
+    activkey: string;
+    parent_alias_id: string;
+    company_id: number;
+    auth_key: string;
+    expired_key: string;
+    deleted_by: number;
+    deleted_stamp: string;
+    _history: string;
   }
 }
 
@@ -54,12 +72,8 @@ export const authOptions: NextAuthOptions = {
         if (!ress?.success) {
           return null;
         }
-
         return {
-          id: ress.user.id,
-          guid: ress.user.guid,
-          user_name: ress.user.user_name,
-          email: ress.user.email,
+          ...ress.user,
           randomKey: "Random",
         };
       },
@@ -82,6 +96,7 @@ export const authOptions: NextAuthOptions = {
         ...session,
         user: {
           ...session.user,
+          ...token,
           id: token.id,
           randomKey: token.randomKey,
         },
@@ -92,6 +107,7 @@ export const authOptions: NextAuthOptions = {
         const u = user as unknown as any;
         return {
           ...token,
+          ...u,
           id: u.id,
           randomKey: u.randomKey,
         };
