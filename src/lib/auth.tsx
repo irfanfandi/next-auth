@@ -1,7 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-
 declare module "next-auth" {
   interface User {
     guid: string;
@@ -30,6 +29,7 @@ let userDataGoogle: any;
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/",
+    error: "/error",
   },
   session: {
     strategy: "jwt",
